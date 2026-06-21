@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Proveedor - VentaRápida</title>
+    <style>
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
+        .contenedor { max-width:520px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        h1 { color:#0b1f3a; margin-bottom:20px; }
+        label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
+        input, textarea, select { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:18px; font-family:inherit; box-sizing:border-box; }
+        .fila-dos { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .btn { background:#1e6fe8; color:#fff; border:none; padding:11px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        .error { background:#fdecec; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:18px; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <a class="volver" th:href="@{/proveedores}">&larr; Volver a proveedores</a>
+        <h1 th:text="${proveedor.idProveedor} != null ? 'Editar proveedor' : 'Nuevo proveedor'"></h1>
+
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <form th:action="@{/proveedores/guardar}" th:object="${proveedor}" method="post">
+            <input type="hidden" th:field="*{idProveedor}">
+
+            <div class="fila-dos">
+                <div>
+                    <label>RUC</label>
+                    <input type="text" th:field="*{ruc}" maxlength="11" placeholder="11 dígitos" required>
+                </div>
+                <div>
+                    <label>Activo</label>
+                    <select th:field="*{activo}">
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Razón social</label>
+            <input type="text" th:field="*{razonSocial}" required>
+
+            <div class="fila-dos">
+                <div>
+                    <label>Contacto</label>
+                    <input type="text" th:field="*{contacto}">
+                </div>
+                <div>
+                    <label>Teléfono</label>
+                    <input type="text" th:field="*{telefono}">
+                </div>
+            </div>
+
+            <label>Email</label>
+            <input type="email" th:field="*{email}">
+
+            <label>Dirección</label>
+            <input type="text" th:field="*{direccion}">
+
+            <button type="submit" class="btn">Guardar</button>
+        </form>
+    </div>
+</body>
+</html>

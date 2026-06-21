@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuario - VentaRápida</title>
+    <style>
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
+        .contenedor { max-width:480px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        h1 { color:#0b1f3a; margin-bottom:20px; }
+        label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
+        input, select { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:18px; font-family:inherit; box-sizing:border-box; }
+        .btn { background:#1e6fe8; color:#fff; border:none; padding:11px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        .error { background:#fdecec; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:18px; }
+        .ayuda { font-size:12px; color:#8492a6; margin:-12px 0 18px; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <a class="volver" th:href="@{/usuarios}">&larr; Volver a usuarios</a>
+        <h1 th:text="${esNuevo} ? 'Nuevo usuario' : 'Editar usuario'"></h1>
+
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+            <input type="hidden" th:field="*{idUsuario}">
+
+            <label>Username</label>
+            <input type="text" th:field="*{username}" required>
+
+            <label>Nombre completo</label>
+            <input type="text" th:field="*{nombre}" required>
+
+            <label>Email</label>
+            <input type="email" th:field="*{email}">
+
+            <label>Rol</label>
+            <select th:field="*{rol}">
+                <option value="ADMIN">ADMIN</option>
+                <option value="VENDEDOR">VENDEDOR</option>
+            </select>
+
+            <label>Activo</label>
+            <select th:field="*{activo}">
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+            </select>
+
+            <label th:text="${esNuevo} ? 'Contraseña' : 'Nueva contraseña (opcional)'"></label>
+            <input type="password" name="passwordPlano" placeholder="Mínimo 6 caracteres">
+            <p class="ayuda" th:unless="${esNuevo}">Déjalo vacío si no deseas cambiar la contraseña actual.</p>
+
+            <button type="submit" class="btn">Guardar</button>
+        </form>
+    </div>
+</body>
+</html>

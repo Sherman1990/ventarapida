@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Producto - VentaRápida</title>
+    <style>
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
+        .contenedor { max-width:560px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        h1 { color:#0b1f3a; margin-bottom:20px; }
+        label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
+        input, textarea, select { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:18px; font-family:inherit; box-sizing:border-box; }
+        .fila-dos { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .btn { background:#1e6fe8; color:#fff; border:none; padding:11px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        .error { background:#fdecec; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:18px; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <a class="volver" th:href="@{/productos}">&larr; Volver a productos</a>
+        <h1 th:text="${producto.idProducto} != null ? 'Editar producto' : 'Nuevo producto'"></h1>
+
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <form th:action="@{/productos/guardar}" th:object="${producto}" method="post">
+            <input type="hidden" th:field="*{idProducto}">
+
+            <label>Código</label>
+            <input type="text" th:field="*{codigo}" placeholder="Ej: LAP-003" required>
+
+            <label>Nombre</label>
+            <input type="text" th:field="*{nombre}" placeholder="Ej: Laptop Asus VivoBook" required>
+
+            <label>Descripción</label>
+            <textarea th:field="*{descripcion}" rows="3"></textarea>
+
+            <div class="fila-dos">
+                <div>
+                    <label>Precio (S/)</label>
+                    <input type="number" step="0.01" min="0" th:field="*{precio}" required>
+                </div>
+                <div>
+                    <label>Stock</label>
+                    <input type="number" min="0" th:field="*{stock}" required>
+                </div>
+            </div>
+
+            <div class="fila-dos">
+                <div>
+                    <label>Stock mínimo</label>
+                    <input type="number" min="0" th:field="*{stockMinimo}" required>
+                </div>
+                <div>
+                    <label>Activo</label>
+                    <select th:field="*{activo}">
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Categoría</label>
+            <select th:field="*{categoria}">
+                <option th:each="c : ${categorias}" th:value="${c.idCategoria}" th:text="${c.nombre}"></option>
+            </select>
+
+            <label>Proveedor</label>
+            <select th:field="*{proveedor}">
+                <option th:each="prov : ${proveedores}" th:value="${prov.idProveedor}" th:text="${prov.razonSocial}"></option>
+            </select>
+
+            <button type="submit" class="btn">Guardar</button>
+        </form>
+    </div>
+</body>
+</html>

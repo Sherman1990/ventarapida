@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Venta - VentaRápida</title>
+    <style>
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
+        .contenedor { max-width:1000px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        h1 { color:#0b1f3a; margin-bottom:4px; }
+        .subtitulo { color:#8492a6; margin-bottom:24px; }
+        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        .error { background:#fdecec; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:18px; }
+
+        label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
+        select { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:22px; box-sizing:border-box; }
+
+        .agregar-fila { display:flex; gap:10px; align-items:flex-end; margin-bottom:20px; }
+        .agregar-fila > div { flex:1; }
+        .agregar-fila input[type=number] { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; box-sizing:border-box; }
+        .btn-agregar { background:#0b1f3a; color:#fff; border:none; padding:11px 18px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; height:42px; }
+
+        table { width:100%; border-collapse:collapse; margin-top:10px; }
+        th, td { text-align:left; padding:10px; border-bottom:1px solid #eef1f6; font-size:13px; }
+        th { color:#5b6b82; font-size:11px; text-transform:uppercase; }
+        .quitar { color:#c0392b; cursor:pointer; font-weight:700; background:none; border:none; font-size:13px; }
+
+        .total-fila { text-align:right; font-size:18px; font-weight:700; color:#0b1f3a; margin-top:16px; }
+        .btn-confirmar { background:#1e6fe8; color:#fff; border:none; padding:13px 24px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; margin-top:18px; }
+        .vacio-carrito { color:#8492a6; padding:20px 0; text-align:center; font-size:13px; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <a class="volver" th:href="@{/ventas}">&larr; Volver a ventas</a>
+        <h1>Nueva Venta</h1>
+        <p class="subtitulo">Registra una venta para TechStore Perú</p>
+
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <form id="formVenta" th:action="@{/ventas/registrar}" method="post">
+            <label>Cliente</label>
+            <select name="idCliente" required>
+                <option value="">-- Selecciona un cliente --</option>
+                <option th:each="c : ${clientes}" th:value="${c.idCliente}"
+                        th:text="${c.nombreCompleto} + ' - DNI ' + ${c.dni}"></option>
+            </select>
+
+            <label>Agregar producto al carrito</label>
+            <div class="agregar-fila">
+                <div>
+                    <select id="selectProducto">
+                        <option value="">-- Selecciona un producto --</option>
+                        <option th:each="p : ${productos}"
+                                th:value="${p.idProducto}"
+                                th:text="${p.nombre} + ' (Stock: ' + ${p.stock} + ') - S/ ' + ${p.precio}"
+                                th:data-nombre="${p.nombre}"
+                                th:data-precio="${p.precio}"
+                                th:data-stock="${p.stock}"></option>
+                    </select>
+                </div>
+                <div style="max-width:110px;">
+                    <input type="number" id="inputCantidad" min="1" value="1" placeholder="Cant.">
+                </div>
+                <button type="button" class="btn-agregar" onclick="agregarAlCarrito()">+ Agregar</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th><th></th></tr>
+                </thead>
+                <tbody id="cuerpoCarrito">
+                    <!-- las filas se agregan dinámicamente con JavaScript -->
+                </tbody>
+            </table>
+            <p class="vacio-carrito" id="mensajeVacio">El carrito está vacío. Agrega productos arriba.</p>
+
+            <div class="total-fila">Total: S/ <span id="totalCarrito">0.00</span></div>
+
+            <button type="submit" class="btn-confirmar" id="btnConfirmar" disabled>Confirmar venta</button>
+        </form>
+    </div>
+
+    <script>
+        // El carrito vive en memoria como un array de objetos JS
+        // mientras el usuario arma la venta en el navegador
+        let carrito = [];
+
+        function agregarAlCarrito() {
+            const select = document.getElementById('selectProducto');
+            const opcion = select.options[select.selectedIndex];
+            const cantidad = parseInt(document.getElementById('inputCantidad').value);
+
+            if (!select.value || !cantidad || cantidad <= 0) {
+                alert('Selecciona un producto y una cantidad válida.');
+                return;
+            }
+
+            const stockDisponible = parseInt(opcion.dataset.stock);
+            // Suma la cantidad ya agregada de este mismo producto, si existe
+            const yaEnCarrito = carrito.filter(item => item.id === select.value)
+                                        .reduce((sum, item) => sum + item.cantidad, 0);
+
+            if (cantidad + yaEnCarrito > stockDisponible) {
+                alert('No hay stock suficiente. Disponible: ' + stockDisponible);
+                return;
+            }
+
+            carrito.push({
+                id: select.value,
+                nombre: opcion.dataset.nombre,
+                precio: parseFloat(opcion.dataset.precio),
+                cantidad: cantidad
+            });
+
+            renderizarCarrito();
+            document.getElementById('inputCantidad').value = 1;
+        }
+
+        function quitarDelCarrito(index) {
+            carrito.splice(index, 1);
+            renderizarCarrito();
+        }
+
+        function renderizarCarrito() {
+            const cuerpo = document.getElementById('cuerpoCarrito');
+            const mensajeVacio = document.getElementById('mensajeVacio');
+            cuerpo.innerHTML = '';
+
+            let total = 0;
+            carrito.forEach((item, index) => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${item.nombre}</td>
+                    <td>${item.cantidad}</td>
+                    <td>S/ ${item.precio.toFixed(2)}</td>
+                    <td>S/ ${subtotal.toFixed(2)}</td>
+                    <td><button type="button" class="quitar" onclick="quitarDelCarrito(${index})">Quitar</button></td>
+                `;
+                cuerpo.appendChild(fila);
+
+                // Por cada producto del carrito, se agregan campos ocultos
+                // al formulario: idProducto[] y cantidad[], que el
+                // VentaController recibe como arrays paralelos
+                const inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'idProducto';
+                inputId.value = item.id;
+                cuerpo.appendChild(inputId);
+
+                const inputCantidad = document.createElement('input');
+                inputCantidad.type = 'hidden';
+                inputCantidad.name = 'cantidad';
+                inputCantidad.value = item.cantidad;
+                cuerpo.appendChild(inputCantidad);
+            });
+
+            document.getElementById('totalCarrito').textContent = total.toFixed(2);
+            mensajeVacio.style.display = carrito.length === 0 ? 'block' : 'none';
+            document.getElementById('btnConfirmar').disabled = carrito.length === 0;
+        }
+    </script>
+</body>
+</html>

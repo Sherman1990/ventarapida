@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VentaRápida - Iniciar Sesión</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eef3fb 0%, #f7f9fc 100%);
+        }
+        .panel-izquierdo {
+            flex: 1.2;
+            padding: 48px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .logo-fila { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .logo-icono {
+            width: 64px; height: 64px;
+            background: #1e6fe8;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 32px;
+        }
+        .logo-texto h1 { font-size: 28px; color: #0b1f3a; }
+        .logo-texto h1 span { color: #1e6fe8; }
+        .logo-texto p { font-size: 14px; color: #5b6b82; margin-bottom: 8px; }
+        .badge {
+            background: #1e6fe8; color: white; font-size: 11px; font-weight: bold;
+            padding: 4px 10px; border-radius: 4px; letter-spacing: 0.5px;
+        }
+        .titulo-principal { font-size: 30px; color: #0b1f3a; font-weight: bold; margin: 24px 0 12px; }
+        .titulo-principal .resaltado { color: #1e6fe8; }
+        .descripcion { color: #5b6b82; font-size: 15px; margin-bottom: 32px; max-width: 420px; }
+        .caracteristicas {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px;
+        }
+        .caracteristica { text-align: center; }
+        .caracteristica .icono { font-size: 26px; color: #1e6fe8; margin-bottom: 8px; }
+        .caracteristica h4 { font-size: 14px; color: #0b1f3a; margin-bottom: 4px; }
+        .caracteristica p { font-size: 12px; color: #8492a6; }
+
+        .panel-derecho {
+            width: 460px;
+            background: white;
+            margin: 32px 32px 32px 0;
+            border-radius: 16px;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 24px rgba(11, 31, 58, 0.06);
+        }
+        .avatar-circulo {
+            width: 64px; height: 64px;
+            background: #e6f0fd;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #1e6fe8; font-size: 28px;
+            margin: 0 auto 20px;
+        }
+        .panel-derecho h2 { text-align: center; font-size: 24px; color: #0b1f3a; margin-bottom: 6px; }
+        .panel-derecho > p.subtitulo { text-align: center; color: #8492a6; font-size: 14px; margin-bottom: 28px; }
+
+        form label { font-size: 13px; color: #0b1f3a; font-weight: 600; display: block; margin-bottom: 6px; }
+        .campo { position: relative; margin-bottom: 18px; }
+        .campo input {
+            width: 100%; padding: 11px 14px 11px 38px;
+            border: 1px solid #d8dee8; border-radius: 8px; font-size: 14px;
+        }
+        .campo input:focus { outline: none; border-color: #1e6fe8; }
+        .campo .icono-campo {
+            position: absolute; left: 12px; top: 38px; color: #8492a6; font-size: 16px;
+        }
+
+        .fila-opciones {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; margin-bottom: 22px;
+        }
+        .fila-opciones a { color: #1e6fe8; text-decoration: none; }
+        .recordarme { display: flex; align-items: center; gap: 6px; color: #5b6b82; }
+
+        .btn-ingresar {
+            background: #1e6fe8; color: white; border: none; border-radius: 8px;
+            padding: 13px; font-size: 15px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-ingresar:hover { background: #1759b8; }
+
+        .divisor {
+            display: flex; align-items: center; gap: 12px; color: #8492a6;
+            font-size: 13px; margin: 22px 0;
+        }
+        .divisor::before, .divisor::after { content: ""; flex: 1; height: 1px; background: #e3e7ee; }
+
+        .btn-crear {
+            background: white; border: 1px solid #d8dee8; border-radius: 8px;
+            padding: 12px; font-size: 14px; font-weight: 600; color: #0b1f3a;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none;
+        }
+
+        .caja-recuperar {
+            background: #f4f8fe; border-radius: 10px; padding: 18px; margin-top: 22px;
+            display: flex; gap: 14px;
+        }
+        .caja-recuperar .icono-candado {
+            width: 36px; height: 36px; background: #e6f0fd; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: #1e6fe8; flex-shrink: 0;
+        }
+        .caja-recuperar h4 { font-size: 13px; color: #0b1f3a; margin-bottom: 4px; }
+        .caja-recuperar p { font-size: 12px; color: #5b6b82; margin-bottom: 8px; }
+        .caja-recuperar a {
+            background: white; border: 1px solid #d8dee8; border-radius: 6px;
+            padding: 6px 12px; font-size: 12px; color: #1e6fe8; cursor: pointer;
+            text-decoration: none; display: inline-block;
+        }
+
+        .mensaje-error {
+            background: #fdecec; color: #c0392b; padding: 10px 14px; border-radius: 8px;
+            font-size: 13px; margin-bottom: 18px; text-align: center;
+        }
+        .mensaje-info {
+            background: #eafaf0; color: #1e8449; padding: 10px 14px; border-radius: 8px;
+            font-size: 13px; margin-bottom: 18px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel-izquierdo">
+        <div class="logo-fila">
+            <div class="logo-icono">🛒</div>
+            <div class="logo-texto">
+                <h1>Venta<span>Rápida</span></h1>
+                <p>Sistema de Punto de Venta</p>
+                <span class="badge">TIENDA DE SERVICIOS DE CÓMPUTO</span>
+            </div>
+        </div>
+
+        <h2 class="titulo-principal">Todo en <span class="resaltado">tecnología</span>,<br>todo para ti.</h2>
+        <p class="descripcion">Administra tus ventas de manera rápida, segura y eficiente.</p>
+
+        <div class="caracteristicas">
+            <div class="caracteristica">
+                <div class="icono">🛡️</div>
+                <h4>Seguridad</h4>
+                <p>Tus datos siempre protegidos</p>
+            </div>
+            <div class="caracteristica">
+                <div class="icono">⚡</div>
+                <h4>Rápido</h4>
+                <p>Procesos ágiles para tu negocio</p>
+            </div>
+            <div class="caracteristica">
+                <div class="icono">🛍️</div>
+                <h4>Fácil de usar</h4>
+                <p>Interfaz intuitiva y amigable</p>
+            </div>
+            <div class="caracteristica">
+                <div class="icono">🎧</div>
+                <h4>Soporte</h4>
+                <p>Asistencia técnica especializada</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-derecho">
+        <div class="avatar-circulo">👤</div>
+        <h2>Iniciar Sesión</h2>
+        <p class="subtitulo">Accede a tu cuenta para continuar</p>
+
+        <!-- Mensajes según lo que devuelva Spring Security o nuestros Controllers -->
+        <p class="mensaje-error" th:if="${param.error}">Usuario o contraseña incorrectos.</p>
+        <p class="mensaje-info" th:if="${param.logout}">Sesión cerrada correctamente.</p>
+        <p class="mensaje-info" th:if="${param.registrado}">Cuenta creada con éxito. Ya puedes iniciar sesión.</p>
+        <p class="mensaje-info" th:if="${param.passwordCambiada}">Contraseña actualizada correctamente.</p>
+
+        <form th:action="@{/login}" method="post">
+            <label for="username">Usuario</label>
+            <div class="campo">
+                <span class="icono-campo">👤</span>
+                <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" required>
+            </div>
+
+            <label for="password">Contraseña</label>
+            <div class="campo">
+                <span class="icono-campo">🔒</span>
+                <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+            </div>
+
+            <div class="fila-opciones">
+                <label class="recordarme">
+                    <input type="checkbox" name="remember-me">
+                    Recordarme
+                </label>
+                <a th:href="@{/recuperar-password}">¿Olvidó su contraseña?</a>
+            </div>
+
+            <button type="submit" class="btn-ingresar">→ Ingresar</button>
+        </form>
+
+        <div class="divisor">¿No tienes una cuenta?</div>
+        <a th:href="@{/registro}" class="btn-crear">+ Crear Usuario</a>
+
+        <div class="caja-recuperar">
+            <div class="icono-candado">🔒</div>
+            <div>
+                <h4>¿Olvidó su contraseña?</h4>
+                <p>No te preocupes, podemos ayudarte a recuperar el acceso a tu cuenta.</p>
+                <a th:href="@{/recuperar-password}">✉ Recuperar contraseña</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

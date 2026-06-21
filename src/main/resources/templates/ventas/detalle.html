@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Venta - VentaRápida</title>
+    <style>
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
+        .contenedor { max-width:700px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        h1 { color:#0b1f3a; margin-bottom:4px; }
+        .info-venta { display:grid; grid-template-columns:1fr 1fr; gap:10px; background:#f4f7fb; padding:16px; border-radius:10px; margin:20px 0; font-size:13px; }
+        .info-venta strong { color:#0b1f3a; }
+        table { width:100%; border-collapse:collapse; margin-top:10px; }
+        th, td { text-align:left; padding:10px; border-bottom:1px solid #eef1f6; font-size:13px; }
+        th { color:#5b6b82; font-size:11px; text-transform:uppercase; }
+        .total-fila { text-align:right; font-size:18px; font-weight:700; color:#0b1f3a; margin-top:16px; }
+        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        .badge-completada { background:#eaf6ec; color:#1e8449; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700; }
+        .btn-pdf {
+            display:inline-block; margin-top:24px; background:#0b1f3a; color:#fff;
+            padding:11px 20px; border-radius:8px; text-decoration:none;
+            font-weight:600; font-size:14px;
+        }
+        .btn-pdf:hover { background:#16315c; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <a class="volver" th:href="@{/ventas}">&larr; Volver a ventas</a>
+        <h1 th:text="'Venta N° ' + ${venta.idVenta}"></h1>
+
+        <div class="info-venta">
+            <div><strong>Fecha:</strong> <span th:text="${venta.fecha}"></span></div>
+            <div><strong>Estado:</strong> <span class="badge-completada" th:text="${venta.estado}"></span></div>
+            <div><strong>Cliente:</strong> <span th:text="${venta.cliente.nombreCompleto}"></span></div>
+            <div><strong>Vendedor:</strong> <span th:text="${venta.usuario.nombre}"></span></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="d : ${venta.detalles}">
+                    <td th:text="${d.producto.nombre}"></td>
+                    <td th:text="${d.cantidad}"></td>
+                    <td th:text="'S/ ' + ${d.precioUnitario}"></td>
+                    <td th:text="'S/ ' + ${d.subtotal}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total-fila">Total: S/ <span th:text="${venta.total}"></span></div>
+
+        <a th:href="@{/ventas/{id}/pdf(id=${venta.idVenta})}" target="_blank" class="btn-pdf">
+            🖨️ Ver / Imprimir comprobante PDF
+        </a>
+    </div>
+</body>
+</html>
