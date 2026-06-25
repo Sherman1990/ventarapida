@@ -33,6 +33,13 @@ public class ProductoController {
 
     @Autowired
     private ProveedorService proveedorService;
+    
+ // ===== HERRAMIENTAS PARA JASPER REPORTS =====
+    @Autowired
+    private javax.sql.DataSource dataSource;
+
+    @Autowired
+    private org.springframework.core.io.ResourceLoader resourceLoader;
 
     // ===== CONVERSIÓN DE ID -> OBJETO COMPLETO =====
     // Cuando el formulario envía categoria=3 y proveedor=1 (solo el ID,
@@ -117,5 +124,36 @@ public class ProductoController {
     private void cargarListasDesplegables(Model model) {
         model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("proveedores", proveedorService.listarTodos());
+    }
+    
+ // ===== GENERACIÓN DE REPORTE PDF (INVENTARIO) =====
+    @GetMapping("/productos/reporte-inventario")
+    public org.springframework.http.ResponseEntity<byte[]> descargarInventario() {
+        try {
+            // 1. Obtener la conexión directa a la base de datos MySQL
+            java.sql.Connection conexion = dataSource.getConnection();
+
+            // 2. Leer la plantilla que dibujaste en Jaspersoft
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:inventario.jrxml");
+            net.sf.jasperreports.engine.JasperReport reporte = net.sf.jasperreports.engine.JasperCompileManager.compileReport(resource.getInputStream());
+
+            // 3. Llenar el reporte con los datos de la base de datos
+            java.util.Map<String, Object> parametros = new java.util.HashMap<>();
+            net.sf.jasperreports.engine.JasperPrint jasperPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(reporte, parametros, conexion);
+
+            // 4. Exportar el resultado a un arreglo de bytes (el PDF físico)
+            byte[] pdfBytes = net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf(jasperPrint);
+
+            // 5. Preparar la respuesta para que el navegador web lo muestre/descargue
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("inline", "Inventario_TechStore.pdf");
+
+            return org.springframework.http.ResponseEntity.ok().headers(headers).body(pdfBytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError().build();
+        }
     }
 }
