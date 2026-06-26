@@ -1,56 +1,197 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Clientes - VentaRápida</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
-        .contenedor { max-width:1000px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
-        h1 { color:#0b1f3a; margin-bottom:4px; }
-        .subtitulo { color:#8492a6; margin-bottom:24px; }
-        .btn { display:inline-block; background:#1e6fe8; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; }
-        table { width:100%; border-collapse:collapse; margin-top:20px; }
-        th, td { text-align:left; padding:12px 10px; border-bottom:1px solid #eef1f6; font-size:13px; }
-        th { color:#5b6b82; font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
-        td a { color:#1e6fe8; text-decoration:none; margin-right:14px; font-weight:600; }
-        td a.eliminar { color:#c0392b; }
-        .badge-inactivo { background:#eee; color:#888; padding:2px 8px; border-radius:6px; font-size:11px; }
-        .vacio { color:#8492a6; padding:24px 0; text-align:center; }
-        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body { background:#f0f4f8; }
+
+        .navbar {
+            background:#1d6fe8; padding:14px 30px;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .navbar .brand { color:#fff; font-size:20px; font-weight:700; text-decoration:none; }
+        .navbar .brand span { color:#90c4ff; }
+        .navbar a.nav-link { color:#d0e8ff; text-decoration:none; margin-left:20px; font-size:14px; }
+        .navbar a.nav-link:hover { color:#fff; }
+        .navbar .logout { background:#fff; color:#1d6fe8; padding:6px 14px;
+            border-radius:6px; font-weight:600; text-decoration:none; font-size:13px; }
+
+        .contenedor { max-width:1100px; margin:35px auto; padding:0 20px; }
+
+        .encabezado {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:24px;
+        }
+        .encabezado h1 { font-size:26px; color:#0f2a52; }
+        .encabezado p { color:#7a8aa3; font-size:14px; margin-top:4px; }
+        .btn-nuevo {
+            background:#1d6fe8; color:#fff; padding:10px 20px;
+            border-radius:8px; text-decoration:none; font-weight:600; font-size:14px;
+        }
+        .btn-nuevo:hover { background:#1559c4; }
+
+        .alerta-ok {
+            background:#e8f8ef; color:#1e8e4e; padding:12px 16px;
+            border-radius:8px; margin-bottom:20px; font-size:14px;
+            border-left:4px solid #1e8e4e;
+        }
+        .alerta-error {
+            background:#fde8e8; color:#c0392b; padding:12px 16px;
+            border-radius:8px; margin-bottom:20px; font-size:14px;
+            border-left:4px solid #c0392b;
+        }
+
+        .tarjeta {
+            background:#fff; border-radius:14px;
+            box-shadow:0 4px 20px rgba(0,0,0,.07); overflow:hidden;
+        }
+
+        .barra-busqueda {
+            padding:18px 24px; border-bottom:1px solid #eef0f4;
+            display:flex; gap:12px; align-items:center;
+        }
+        .barra-busqueda input {
+            flex:1; padding:10px 14px; border:1.5px solid #d8e0ee;
+            border-radius:8px; font-size:14px; outline:none;
+        }
+        .barra-busqueda input:focus { border-color:#1d6fe8; }
+
+        table { width:100%; border-collapse:collapse; }
+        thead { background:#f8faff; }
+        thead th {
+            padding:14px 20px; text-align:left;
+            font-size:11px; font-weight:700; color:#7a8aa3;
+            text-transform:uppercase; letter-spacing:.6px;
+            border-bottom:2px solid #eef0f4;
+        }
+        tbody tr { border-bottom:1px solid #f0f2f6; transition:background .15s; }
+        tbody tr:hover { background:#f8faff; }
+        tbody td { padding:14px 20px; font-size:14px; color:#2d3a4e; }
+        tbody td:first-child { font-weight:600; color:#0f2a52; }
+
+        .badge-dni {
+            background:#e8f0fe; color:#1d6fe8; padding:4px 10px;
+            border-radius:20px; font-size:12px; font-weight:600;
+        }
+
+        .acciones { display:flex; gap:8px; }
+        .btn-editar {
+            background:#e8f0fe; color:#1d6fe8; padding:6px 14px;
+            border-radius:6px; text-decoration:none; font-size:13px;
+            font-weight:600; transition:background .15s;
+        }
+        .btn-editar:hover { background:#d0e4fc; }
+        .btn-eliminar {
+            background:#fde8e8; color:#c0392b; padding:6px 14px;
+            border-radius:6px; text-decoration:none; font-size:13px;
+            font-weight:600; transition:background .15s; border:none; cursor:pointer;
+        }
+        .btn-eliminar:hover { background:#fbd0d0; }
+
+        .pie-tabla {
+            padding:14px 24px; background:#f8faff;
+            border-top:1px solid #eef0f4;
+            font-size:13px; color:#7a8aa3;
+        }
+
+        .sin-datos {
+            text-align:center; padding:60px 20px; color:#9aa7bd;
+        }
+        .sin-datos .icono { font-size:48px; margin-bottom:12px; }
     </style>
 </head>
 <body>
-    <div class="contenedor">
-        <a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
-        <h1>Clientes</h1>
-        <p class="subtitulo">Clientes registrados de TechStore Perú</p>
 
-        <a class="btn" th:href="@{/clientes/nuevo}">+ Nuevo cliente</a>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a th:href="@{/}" class="brand">Venta<span>Rápida</span></a>
+    <div>
+        <a th:href="@{/}" class="nav-link">Dashboard</a>
+        <a th:href="@{/productos}" class="nav-link">Productos</a>
+        <a th:href="@{/clientes}" class="nav-link">Clientes</a>
+        <a th:href="@{/proveedores}" class="nav-link">Proveedores</a>
+        <a th:href="@{/ventas}" class="nav-link">Ventas</a>
+        <a th:href="@{/logout}" class="nav-link logout" style="margin-left:20px;">Salir</a>
+    </div>
+</nav>
 
-        <table>
+<div class="contenedor">
+
+    <!-- ENCABEZADO -->
+    <div class="encabezado">
+        <div>
+            <h1>👥 Clientes</h1>
+            <p>Clientes registrados de TechStore Perú</p>
+        </div>
+        <a th:href="@{/clientes/nuevo}" class="btn-nuevo">+ Nuevo cliente</a>
+    </div>
+
+    <!-- ALERTAS -->
+    <div th:if="${mensaje}" class="alerta-ok" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alerta-error" th:text="${error}"></div>
+
+    <!-- TABLA -->
+    <div class="tarjeta">
+        <div class="barra-busqueda">
+            <input type="text" id="buscador" placeholder="🔍  Buscar por nombre, DNI o email..." onkeyup="filtrar()">
+        </div>
+
+        <table id="tablaClientes">
             <thead>
-                <tr><th>DNI</th><th>Nombre completo</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Acciones</th></tr>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre Completo</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Dirección</th>
+                    <th>Acciones</th>
+                </tr>
             </thead>
             <tbody>
-                <tr th:each="cli : ${clientes}">
-                    <td th:text="${cli.dni}"></td>
+                <tr th:each="cliente : ${clientes}">
+                    <td><span class="badge-dni" th:text="${cliente.dni}"></span></td>
+                    <td th:text="${cliente.nombreCompleto}"></td>
+                    <td th:text="${cliente.telefono}"></td>
+                    <td th:text="${cliente.email}"></td>
+                    <td th:text="${cliente.direccion}"></td>
                     <td>
-                        <span th:text="${cli.nombreCompleto}"></span>
-                        <span class="badge-inactivo" th:unless="${cli.activo}">Inactivo</span>
+                        <div class="acciones">
+                            <a th:href="@{/clientes/editar/{id}(id=${cliente.idCliente})}" class="btn-editar">✏️ Editar</a>
+                            <form th:action="@{/clientes/eliminar/{id}(id=${cliente.idCliente})}" method="post"
+                                  onsubmit="return confirm('¿Eliminar este cliente?')">
+                                <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                            </form>
+                        </div>
                     </td>
-                    <td th:text="${cli.telefono}"></td>
-                    <td th:text="${cli.email}"></td>
-                    <td th:text="${cli.direccion}"></td>
-                    <td>
-                        <a th:href="@{/clientes/editar/{id}(id=${cli.idCliente})}">Editar</a>
-                        <a class="eliminar" th:href="@{/clientes/eliminar/{id}(id=${cli.idCliente})}"
-                           onclick="return confirm('¿Eliminar este cliente?');">Eliminar</a>
+                </tr>
+                <tr th:if="${#lists.isEmpty(clientes)}">
+                    <td colspan="6">
+                        <div class="sin-datos">
+                            <div class="icono">👥</div>
+                            <p>No hay clientes registrados aún.</p>
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <p class="vacio" th:if="${#lists.isEmpty(clientes)}">No hay clientes registrados todavía.</p>
+        <div class="pie-tabla">
+            Total: <strong th:text="${#lists.size(clientes)}">0</strong> cliente(s) registrado(s)
+        </div>
     </div>
+</div>
+
+<script>
+function filtrar() {
+    const texto = document.getElementById('buscador').value.toLowerCase();
+    const filas = document.querySelectorAll('#tablaClientes tbody tr');
+    filas.forEach(fila => {
+        fila.style.display = fila.textContent.toLowerCase().includes(texto) ? '' : 'none';
+    });
+}
+</script>
+
 </body>
 </html>
