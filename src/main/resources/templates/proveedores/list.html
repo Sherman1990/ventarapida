@@ -5,18 +5,57 @@
     <title>Proveedores - VentaRápida</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
-        .contenedor { max-width:1000px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        .contenedor { max-width:1200px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
         h1 { color:#0b1f3a; margin-bottom:4px; }
         .subtitulo { color:#8492a6; margin-bottom:24px; }
-        .btn { display:inline-block; background:#1e6fe8; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; }
+        .btn { display:inline-block; background:#1e6fe8; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; border:none; cursor:pointer; }
+        .btn:hover { background:#1557c0; }
+        
+        .filtros-container { background:#f8f9fc; padding:20px; border-radius:10px; margin-bottom:24px; }
+        .filtros-row { display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; }
+        .filtro-grupo { flex:1; min-width:200px; }
+        .filtro-grupo label { display:block; font-size:12px; font-weight:600; color:#5b6b82; margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+        .filtro-grupo input, .filtro-grupo select { width:100%; padding:10px 12px; border:1px solid #dfe3eb; border-radius:8px; font-size:14px; font-family:inherit; }
+        .filtro-grupo input:focus, .filtro-grupo select:focus { outline:none; border-color:#1e6fe8; }
+        .btn-filtrar { background:#27ae60; margin-top:auto; }
+        .btn-filtrar:hover { background:#229954; }
+        .btn-limpiar { background:#95a5a6; margin-top:auto; }
+        .btn-limpiar:hover { background:#7f8c8d; }
+        
         table { width:100%; border-collapse:collapse; margin-top:20px; }
         th, td { text-align:left; padding:12px 10px; border-bottom:1px solid #eef1f6; font-size:13px; }
-        th { color:#5b6b82; font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
-        td a { color:#1e6fe8; text-decoration:none; margin-right:14px; font-weight:600; }
+        th { color:#5b6b82; font-size:11px; text-transform:uppercase; letter-spacing:.5px; cursor:pointer; user-select:none; position:relative; }
+        th:hover { background:#f8f9fc; }
+        th.sortable::after { content:'⇅'; margin-left:6px; opacity:0.3; }
+        th.sort-asc::after { content:'↑'; opacity:1; color:#1e6fe8; }
+        th.sort-desc::after { content:'↓'; opacity:1; color:#1e6fe8; }
+        td a { color:#1e6fe8; text-decoration:none; margin-right:14px; font-weight:600; cursor:pointer; }
+        td a:hover { text-decoration:underline; }
         td a.eliminar { color:#c0392b; }
         .badge-inactivo { background:#eee; color:#888; padding:2px 8px; border-radius:6px; font-size:11px; }
         .vacio { color:#8492a6; padding:24px 0; text-align:center; }
         .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
+        .volver:hover { text-decoration:underline; }
+        
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.active { display:flex; }
+        .modal { background:#fff; border-radius:16px; padding:32px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:modalSlideIn 0.3s ease; }
+        @keyframes modalSlideIn { from { transform:translateY(-50px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        .modal-header { margin-bottom:20px; }
+        .modal-header h2 { color:#0b1f3a; margin:0 0 8px 0; font-size:22px; }
+        .modal-header p { color:#8492a6; margin:0; font-size:14px; }
+        .modal-body { margin-bottom:24px; }
+        .modal-info { background:#fff3cd; border-left:4px solid:#ffc107; padding:16px; border-radius:8px; margin-bottom:16px; }
+        .modal-info strong { display:block; color:#856404; margin-bottom:4px; }
+        .modal-info span { color:#856404; font-size:14px; }
+        .modal-actions { display:flex; gap:12px; justify-content:flex-end; }
+        .btn-modal { padding:12px 24px; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer; border:none; transition:all 0.2s; }
+        .btn-cancelar { background:#e9ecef; color:#495057; }
+        .btn-cancelar:hover { background:#dee2e6; }
+        .btn-eliminar { background:#dc3545; color:#fff; }
+        .btn-eliminar:hover { background:#c82333; }
+        
+        .header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
     </style>
 </head>
 <body>
@@ -25,14 +64,39 @@
         <h1>Proveedores</h1>
         <p class="subtitulo">Proveedores registrados de TechStore Perú</p>
 
-        <a class="btn" th:href="@{/proveedores/nuevo}">+ Nuevo proveedor</a>
+        <div class="filtros-container">
+            <div class="filtros-row">
+                <div class="filtro-grupo">
+                    <label>Buscar por RUC</label>
+                    <input type="text" id="filtroRuc" placeholder="Ej: 20100070970">
+                </div>
+                <div class="filtro-grupo">
+                    <label>Buscar por Razón Social</label>
+                    <input type="text" id="filtroRazonSocial" placeholder="Ej: Importaciones Tech">
+                </div>
+                <button class="btn btn-filtrar" onclick="aplicarFiltros()">Filtrar</button>
+                <button class="btn btn-limpiar" onclick="limpiarFiltros()">Limpiar</button>
+            </div>
+        </div>
 
-        <table>
+        <div class="header-row">
+            <a class="btn" th:href="@{/proveedores/nuevo}">+ Nuevo proveedor</a>
+        </div>
+
+        <table id="tablaProveedores">
             <thead>
-                <tr><th>RUC</th><th>Razón social</th><th>Contacto</th><th>Teléfono</th><th>Email</th><th>Acciones</th></tr>
+                <tr>
+                    <th class="sortable" data-column="ruc" onclick="ordenarTabla('ruc')">RUC</th>
+                    <th class="sortable" data-column="razonSocial" onclick="ordenarTabla('razonSocial')">Razón social</th>
+                    <th class="sortable" data-column="contacto" onclick="ordenarTabla('contacto')">Contacto</th>
+                    <th class="sortable" data-column="telefono" onclick="ordenarTabla('telefono')">Teléfono</th>
+                    <th class="sortable" data-column="email" onclick="ordenarTabla('email')">Email</th>
+                    <th>Acciones</th>
+                </tr>
             </thead>
             <tbody>
-                <tr th:each="prov : ${proveedores}">
+                <tr th:each="prov : ${proveedores}" 
+                    th:attr="data-ruc=${prov.ruc}, data-razon=${prov.razonSocial}, data-contacto=${prov.contacto}, data-telefono=${prov.telefono}, data-email=${prov.email}, data-activo=${prov.activo}">
                     <td th:text="${prov.ruc}"></td>
                     <td>
                         <span th:text="${prov.razonSocial}"></span>
@@ -43,8 +107,8 @@
                     <td th:text="${prov.email}"></td>
                     <td>
                         <a th:href="@{/proveedores/editar/{id}(id=${prov.idProveedor})}">Editar</a>
-                        <a class="eliminar" th:href="@{/proveedores/eliminar/{id}(id=${prov.idProveedor})}"
-                           onclick="return confirm('¿Eliminar este proveedor?');">Eliminar</a>
+                        <a class="eliminar" onclick="abrirModalEliminar(this)" 
+                           th:attr="data-id=${prov.idProveedor}, data-nombre=${prov.razonSocial}">Eliminar</a>
                     </td>
                 </tr>
             </tbody>
@@ -52,5 +116,131 @@
 
         <p class="vacio" th:if="${#lists.isEmpty(proveedores)}">No hay proveedores registrados todavía.</p>
     </div>
+
+    <div class="modal-overlay" id="modalEliminar">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Confirmar eliminación</h2>
+                <p>Esta acción no se puede deshacer</p>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <strong>¿Está seguro que desea eliminar este proveedor?</strong>
+                    <span id="proveedorNombre"></span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-modal btn-eliminar" onclick="confirmarEliminar()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <form id="formEliminar" method="post" style="display:none;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
+
+    <script>
+        let proveedorIdEliminar = null;
+        let ordenActual = { columna: null, direccion: 'asc' };
+
+        function abrirModalEliminar(elemento) {
+            proveedorIdEliminar = elemento.getAttribute('data-id');
+            const nombre = elemento.getAttribute('data-nombre');
+            document.getElementById('proveedorNombre').textContent = nombre;
+            document.getElementById('modalEliminar').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalEliminar').classList.remove('active');
+            proveedorIdEliminar = null;
+        }
+
+        function confirmarEliminar() {
+            if (proveedorIdEliminar) {
+                const form = document.getElementById('formEliminar');
+                form.action = '/proveedores/eliminar/' + proveedorIdEliminar;
+                form.submit();
+            }
+        }
+
+        document.getElementById('modalEliminar').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModal();
+            }
+        });
+
+        function aplicarFiltros() {
+            const filtroRuc = document.getElementById('filtroRuc').value.toLowerCase();
+            const filtroRazonSocial = document.getElementById('filtroRazonSocial').value.toLowerCase();
+            
+            const filas = document.querySelectorAll('#tablaProveedores tbody tr');
+            
+            filas.forEach(fila => {
+                const ruc = fila.getAttribute('data-ruc').toLowerCase();
+                const razon = fila.getAttribute('data-razon').toLowerCase();
+                
+                let mostrar = true;
+                
+                if (filtroRuc && !ruc.includes(filtroRuc)) {
+                    mostrar = false;
+                }
+                
+                if (filtroRazonSocial && !razon.includes(filtroRazonSocial)) {
+                    mostrar = false;
+                }
+                
+                fila.style.display = mostrar ? '' : 'none';
+            });
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('filtroRuc').value = '';
+            document.getElementById('filtroRazonSocial').value = '';
+            
+            const filas = document.querySelectorAll('#tablaProveedores tbody tr');
+            filas.forEach(fila => {
+                fila.style.display = '';
+            });
+        }
+
+        function ordenarTabla(columna) {
+            const tabla = document.getElementById('tablaProveedores');
+            const tbody = tabla.querySelector('tbody');
+            const filas = Array.from(tbody.querySelectorAll('tr'));
+            
+            if (ordenActual.columna === columna) {
+                ordenActual.direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
+            } else {
+                ordenActual.columna = columna;
+                ordenActual.direccion = 'asc';
+            }
+            
+            const headers = tabla.querySelectorAll('th');
+            headers.forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            
+            const headerActual = tabla.querySelector(`th[data-column="${columna}"]`);
+            headerActual.classList.add(ordenActual.direccion === 'asc' ? 'sort-asc' : 'sort-desc');
+            
+            filas.sort((a, b) => {
+                let valorA = a.getAttribute(`data-${columna}`) || '';
+                let valorB = b.getAttribute(`data-${columna}`) || '';
+                
+                valorA = valorA.toLowerCase();
+                valorB = valorB.toLowerCase();
+                
+                if (valorA < valorB) return ordenActual.direccion === 'asc' ? -1 : 1;
+                if (valorA > valorB) return ordenActual.direccion === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            filas.forEach(fila => tbody.appendChild(fila));
+        }
+
+        document.getElementById('filtroRuc').addEventListener('input', aplicarFiltros);
+        document.getElementById('filtroRazonSocial').addEventListener('input', aplicarFiltros);
+    </script>
 </body>
 </html>

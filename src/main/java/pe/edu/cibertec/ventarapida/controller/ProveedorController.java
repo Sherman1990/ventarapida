@@ -54,7 +54,7 @@ public class ProveedorController {
         return "redirect:/proveedores";
     }
 
-    @GetMapping("/proveedores/eliminar/{id}")
+    @PostMapping("/proveedores/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         proveedorService.eliminar(id);
         return "redirect:/proveedores";
