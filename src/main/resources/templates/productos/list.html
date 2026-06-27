@@ -31,6 +31,9 @@
 
         <div class="barra-superior">
             <a class="btn" th:href="@{/productos/nuevo}">+ Nuevo producto</a>
+			<a th:href="@{/productos/reporte-inventario}" class="btn btn-danger" target="_blank" style="margin-left: 10px;">
+			    Descargar Inventario PDF
+			</a>
             <form class="busqueda" th:action="@{/productos/buscar}" method="get">
                 <input type="text" name="texto" placeholder="Buscar por nombre..." th:value="${textoBusqueda}">
                 <button class="btn" type="submit">Buscar</button>
