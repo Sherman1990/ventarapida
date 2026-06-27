@@ -25,19 +25,8 @@
         <form th:action="@{/proveedores/guardar}" th:object="${proveedor}" method="post">
             <input type="hidden" th:field="*{idProveedor}">
 
-            <div class="fila-dos">
-                <div>
-                    <label>RUC</label>
-                    <input type="text" th:field="*{ruc}" maxlength="11" placeholder="11 dígitos" required>
-                </div>
-                <div>
-                    <label>Activo</label>
-                    <select th:field="*{activo}">
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
+            <label>RUC</label>
+            <input type="text" th:field="*{ruc}" maxlength="11" placeholder="11 dígitos" required>
 
             <label>Razón social</label>
             <input type="text" th:field="*{razonSocial}" required>
