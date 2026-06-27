@@ -14,6 +14,14 @@
         label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
         select { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:22px; box-sizing:border-box; }
 
+        /* Buscador de productos */
+        #buscadorProducto {
+            width:100%; padding:10px 12px; border:1px solid #d8dee8;
+            border-radius:8px; font-size:14px; box-sizing:border-box;
+            margin-bottom:8px;
+        }
+        #buscadorProducto:focus { outline:none; border-color:#1e6fe8; box-shadow:0 0 0 3px rgba(30,111,232,.12); }
+
         .agregar-fila { display:flex; gap:10px; align-items:flex-end; margin-bottom:20px; }
         .agregar-fila > div { flex:1; }
         .agregar-fila input[type=number] { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; box-sizing:border-box; }
@@ -46,9 +54,15 @@
             </select>
 
             <label>Agregar producto al carrito</label>
+
+            <!-- BUSCADOR: filtra las opciones del select mientras escribes -->
+            <input type="text" id="buscadorProducto"
+                   placeholder="Escribe para buscar un producto..."
+                   oninput="filtrarProductos(this.value)">
+
             <div class="agregar-fila">
                 <div>
-                    <select id="selectProducto">
+                    <select id="selectProducto" size="5" style="height:auto;">
                         <option value="">-- Selecciona un producto --</option>
                         <option th:each="p : ${productos}"
                                 th:value="${p.idProducto}"
@@ -81,9 +95,24 @@
     </div>
 
     <script>
-        // El carrito vive en memoria como un array de objetos JS
-        // mientras el usuario arma la venta en el navegador
         let carrito = [];
+
+        // Guarda todas las opciones originales del select al cargar la página
+        const selectProducto = document.getElementById('selectProducto');
+        const opcionesOriginales = Array.from(selectProducto.options);
+
+        // Filtra las opciones del select según lo que escribe el usuario
+        function filtrarProductos(texto) {
+            const q = texto.toLowerCase().trim();
+            // Limpia el select
+            selectProducto.innerHTML = '';
+            // Vuelve a agregar solo las opciones que coinciden
+            opcionesOriginales.forEach(function(opcion) {
+                if (opcion.value === '' || opcion.text.toLowerCase().includes(q)) {
+                    selectProducto.appendChild(opcion.cloneNode(true));
+                }
+            });
+        }
 
         function agregarAlCarrito() {
             const select = document.getElementById('selectProducto');
@@ -96,7 +125,6 @@
             }
 
             const stockDisponible = parseInt(opcion.dataset.stock);
-            // Suma la cantidad ya agregada de este mismo producto, si existe
             const yaEnCarrito = carrito.filter(item => item.id === select.value)
                                         .reduce((sum, item) => sum + item.cantidad, 0);
 
@@ -141,9 +169,6 @@
                 `;
                 cuerpo.appendChild(fila);
 
-                // Por cada producto del carrito, se agregan campos ocultos
-                // al formulario: idProducto[] y cantidad[], que el
-                // VentaController recibe como arrays paralelos
                 const inputId = document.createElement('input');
                 inputId.type = 'hidden';
                 inputId.name = 'idProducto';
