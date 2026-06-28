@@ -4,109 +4,330 @@
     <meta charset="UTF-8">
     <title>Nueva Venta - VentaRápida</title>
     <style>
-        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
-        .contenedor { max-width:1000px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
-        h1 { color:#0b1f3a; margin-bottom:4px; }
-        .subtitulo { color:#8492a6; margin-bottom:24px; }
-        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
-        .error { background:#fdecec; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:18px; }
-
-        label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
-        select { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:22px; box-sizing:border-box; }
-
-        /* Buscador de productos */
-        #buscadorProducto {
-            width:100%; padding:10px 12px; border:1px solid #d8dee8;
-            border-radius:8px; font-size:14px; box-sizing:border-box;
-            margin-bottom:8px;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f0fe 0%, #f4f7fb 100%);
+            min-height: 100vh;
+            padding: 32px 16px;
         }
-        #buscadorProducto:focus { outline:none; border-color:#1e6fe8; box-shadow:0 0 0 3px rgba(30,111,232,.12); }
 
-        .agregar-fila { display:flex; gap:10px; align-items:flex-end; margin-bottom:20px; }
-        .agregar-fila > div { flex:1; }
-        .agregar-fila input[type=number] { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; box-sizing:border-box; }
-        .btn-agregar { background:#0b1f3a; color:#fff; border:none; padding:11px 18px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; height:42px; }
+        .header-pagina {
+            max-width: 1000px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .volver {
+            color: #1e6fe8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            background: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid #d8dee8;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+            transition: background .15s;
+        }
+        .volver:hover { background: #f0f5ff; }
+        .titulo-pagina h1 { color: #0b1f3a; font-size: 24px; font-weight: 700; }
+        .titulo-pagina p  { color: #8492a6; font-size: 13px; margin-top: 2px; }
 
-        table { width:100%; border-collapse:collapse; margin-top:10px; }
-        th, td { text-align:left; padding:10px; border-bottom:1px solid #eef1f6; font-size:13px; }
-        th { color:#5b6b82; font-size:11px; text-transform:uppercase; }
-        .quitar { color:#c0392b; cursor:pointer; font-weight:700; background:none; border:none; font-size:13px; }
+        .contenedor {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
 
-        .total-fila { text-align:right; font-size:18px; font-weight:700; color:#0b1f3a; margin-top:16px; }
-        .btn-confirmar { background:#1e6fe8; color:#fff; border:none; padding:13px 24px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; margin-top:18px; }
-        .vacio-carrito { color:#8492a6; padding:20px 0; text-align:center; font-size:13px; }
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07);
+            border: 1px solid #eef1f6;
+        }
+
+        .card-titulo {
+            font-size: 12px;
+            font-weight: 700;
+            color: #8492a6;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eef1f6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-titulo span { font-size: 16px; }
+
+        .error {
+            grid-column: 1 / -1;
+            background: #fdecec;
+            color: #c0392b;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            border-left: 4px solid #c0392b;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #5b6b82;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d8dee8;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #0b1f3a;
+            background: #fafbfd;
+            box-sizing: border-box;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238492a6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            cursor: pointer;
+        }
+        select:focus { outline: none; border-color: #1e6fe8; box-shadow: 0 0 0 3px rgba(30,111,232,.12); }
+
+        #buscadorProducto {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid #d8dee8;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafbfd url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238492a6' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 10px center;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        #buscadorProducto:focus { outline: none; border-color: #1e6fe8; box-shadow: 0 0 0 3px rgba(30,111,232,.12); }
+
+        #selectProducto {
+            width: 100%;
+            height: 130px;
+            border: 1px solid #d8dee8;
+            border-radius: 8px;
+            font-size: 13px;
+            padding: 4px;
+            background: #fafbfd;
+            margin-bottom: 12px;
+        }
+        #selectProducto option { padding: 6px 8px; border-radius: 4px; cursor: pointer; }
+        #selectProducto option:checked { background: #1e6fe8; color: #fff; }
+
+        .fila-cantidad {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .fila-cantidad label { margin: 0; white-space: nowrap; }
+        .fila-cantidad input[type=number] {
+            width: 80px;
+            padding: 9px 10px;
+            border: 1px solid #d8dee8;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            background: #fafbfd;
+        }
+        .fila-cantidad input[type=number]:focus { outline: none; border-color: #1e6fe8; }
+        .btn-agregar {
+            flex: 1;
+            background: linear-gradient(135deg, #1e6fe8, #1558c0);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(30,111,232,.3);
+            transition: opacity .15s;
+        }
+        .btn-agregar:hover { opacity: .9; }
+
+        .card-carrito { grid-column: 1 / -1; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #f8fafc; }
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #8492a6;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+        td { padding: 12px; font-size: 13px; color: #0b1f3a; border-bottom: 1px solid #f0f3f8; }
+        tbody tr:hover { background: #fafbfd; }
+        td.nombre-col { font-weight: 600; }
+        td.precio-col, td.subtotal-col { color: #1e6fe8; font-weight: 700; }
+
+        .quitar {
+            background: #fdecec;
+            color: #c0392b;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .quitar:hover { background: #f5c6c6; }
+
+        .vacio-carrito {
+            text-align: center;
+            padding: 32px;
+            color: #b0bdd0;
+            font-size: 14px;
+        }
+        .vacio-carrito .icono { font-size: 36px; display: block; margin-bottom: 8px; }
+
+        .pie-carrito {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px solid #eef1f6;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .total-bloque { text-align: right; }
+        .total-label { font-size: 12px; color: #8492a6; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+        .total-monto { font-size: 28px; font-weight: 800; color: #0b1f3a; }
+        .total-monto span { font-size: 16px; color: #8492a6; margin-right: 4px; }
+
+        .btn-confirmar {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 3px 12px rgba(22,163,74,.35);
+            transition: opacity .15s;
+        }
+        .btn-confirmar:hover:not(:disabled) { opacity: .9; }
+        .btn-confirmar:disabled {
+            background: #d1d5db;
+            box-shadow: none;
+            cursor: not-allowed;
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body>
-    <div class="contenedor">
-        <a class="volver" th:href="@{/ventas}">&larr; Volver a ventas</a>
-        <h1>Nueva Venta</h1>
-        <p class="subtitulo">Registra una venta para TechStore Perú</p>
 
-        <p class="error" th:if="${error}" th:text="${error}"></p>
+    <div class="header-pagina">
+        <a class="volver" th:href="@{/ventas}">&#8592; Volver</a>
+        <div class="titulo-pagina">
+            <h1>Nueva Venta</h1>
+            <p>Registra una venta para TechStore Perú</p>
+        </div>
+    </div>
 
-        <form id="formVenta" th:action="@{/ventas/registrar}" method="post">
-            <label>Cliente</label>
-            <select name="idCliente" required>
-                <option value="">-- Selecciona un cliente --</option>
-                <option th:each="c : ${clientes}" th:value="${c.idCliente}"
-                        th:text="${c.nombreCompleto} + ' - DNI ' + ${c.dni}"></option>
-            </select>
+    <form id="formVenta" th:action="@{/ventas/registrar}" method="post">
+        <div class="contenedor">
 
-            <label>Agregar producto al carrito</label>
+            <p class="error" th:if="${error}" th:text="${error}"></p>
 
-            <!-- BUSCADOR: filtra las opciones del select mientras escribes -->
-            <input type="text" id="buscadorProducto"
-                   placeholder="Escribe para buscar un producto..."
-                   oninput="filtrarProductos(this.value)">
-
-            <div class="agregar-fila">
-                <div>
-                    <select id="selectProducto" size="5" style="height:auto;">
-                        <option value="">-- Selecciona un producto --</option>
-                        <option th:each="p : ${productos}"
-                                th:value="${p.idProducto}"
-                                th:text="${p.nombre} + ' (Stock: ' + ${p.stock} + ') - S/ ' + ${p.precio}"
-                                th:data-nombre="${p.nombre}"
-                                th:data-precio="${p.precio}"
-                                th:data-stock="${p.stock}"></option>
-                    </select>
-                </div>
-                <div style="max-width:110px;">
-                    <input type="number" id="inputCantidad" min="1" value="1" placeholder="Cant.">
-                </div>
-                <button type="button" class="btn-agregar" onclick="agregarAlCarrito()">+ Agregar</button>
+            <div class="card">
+                <div class="card-titulo"><span>👤</span> Cliente</div>
+                <label>Selecciona el cliente</label>
+                <select name="idCliente" required>
+                    <option value="">-- Selecciona un cliente --</option>
+                    <option th:each="c : ${clientes}"
+                            th:value="${c.idCliente}"
+                            th:text="${c.nombreCompleto} + ' - DNI ' + ${c.dni}"></option>
+                </select>
             </div>
 
-            <table>
-                <thead>
-                    <tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th><th></th></tr>
-                </thead>
-                <tbody id="cuerpoCarrito">
-                    <!-- las filas se agregan dinámicamente con JavaScript -->
-                </tbody>
-            </table>
-            <p class="vacio-carrito" id="mensajeVacio">El carrito está vacío. Agrega productos arriba.</p>
+            <div class="card">
+                <div class="card-titulo"><span>📦</span> Productos</div>
+                <label>Buscar producto</label>
+                <input type="text" id="buscadorProducto"
+                       placeholder="Escribe para filtrar..."
+                       oninput="filtrarProductos(this.value)">
 
-            <div class="total-fila">Total: S/ <span id="totalCarrito">0.00</span></div>
+                <select id="selectProducto">
+                    <option value="">-- Selecciona un producto --</option>
+                    <option th:each="p : ${productos}"
+                            th:value="${p.idProducto}"
+                            th:text="${p.nombre} + ' (Stock: ' + ${p.stock} + ') - S/ ' + ${p.precio}"
+                            th:data-nombre="${p.nombre}"
+                            th:data-precio="${p.precio}"
+                            th:data-stock="${p.stock}"></option>
+                </select>
 
-            <button type="submit" class="btn-confirmar" id="btnConfirmar" disabled>Confirmar venta</button>
-        </form>
-    </div>
+                <div class="fila-cantidad">
+                    <label>Cantidad:</label>
+                    <input type="number" id="inputCantidad" min="1" value="1">
+                    <button type="button" class="btn-agregar" onclick="agregarAlCarrito()">+ Agregar al carrito</button>
+                </div>
+            </div>
+
+            <div class="card card-carrito">
+                <div class="card-titulo"><span>🛒</span> Carrito de venta</div>
+
+                <table id="tablaCarrito">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unit.</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoCarrito"></tbody>
+                </table>
+
+                <div class="vacio-carrito" id="mensajeVacio">
+                    <span class="icono">🛒</span>
+                    El carrito está vacío. Agrega productos arriba.
+                </div>
+
+                <div class="pie-carrito">
+                    <button type="submit" class="btn-confirmar" id="btnConfirmar" disabled>
+                        ✅ Confirmar venta
+                    </button>
+                    <div class="total-bloque">
+                        <div class="total-label">Total a pagar</div>
+                        <div class="total-monto"><span>S/</span><span id="totalCarrito">0.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
 
     <script>
         let carrito = [];
 
-        // Guarda todas las opciones originales del select al cargar la página
         const selectProducto = document.getElementById('selectProducto');
         const opcionesOriginales = Array.from(selectProducto.options);
 
-        // Filtra las opciones del select según lo que escribe el usuario
         function filtrarProductos(texto) {
             const q = texto.toLowerCase().trim();
-            // Limpia el select
             selectProducto.innerHTML = '';
-            // Vuelve a agregar solo las opciones que coinciden
             opcionesOriginales.forEach(function(opcion) {
                 if (opcion.value === '' || opcion.text.toLowerCase().includes(q)) {
                     selectProducto.appendChild(opcion.cloneNode(true));
@@ -152,6 +373,7 @@
         function renderizarCarrito() {
             const cuerpo = document.getElementById('cuerpoCarrito');
             const mensajeVacio = document.getElementById('mensajeVacio');
+            const tabla = document.getElementById('tablaCarrito');
             cuerpo.innerHTML = '';
 
             let total = 0;
@@ -161,10 +383,10 @@
 
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                    <td>${item.nombre}</td>
+                    <td class="nombre-col">${item.nombre}</td>
                     <td>${item.cantidad}</td>
-                    <td>S/ ${item.precio.toFixed(2)}</td>
-                    <td>S/ ${subtotal.toFixed(2)}</td>
+                    <td class="precio-col">S/ ${item.precio.toFixed(2)}</td>
+                    <td class="subtotal-col">S/ ${subtotal.toFixed(2)}</td>
                     <td><button type="button" class="quitar" onclick="quitarDelCarrito(${index})">Quitar</button></td>
                 `;
                 cuerpo.appendChild(fila);
@@ -184,8 +406,11 @@
 
             document.getElementById('totalCarrito').textContent = total.toFixed(2);
             mensajeVacio.style.display = carrito.length === 0 ? 'block' : 'none';
+            tabla.style.display = carrito.length === 0 ? 'none' : 'table';
             document.getElementById('btnConfirmar').disabled = carrito.length === 0;
         }
+
+        renderizarCarrito();
     </script>
 </body>
 </html>
