@@ -3,71 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Categoría - VentaRápida</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing:border-box; }
-        body { font-family:'Plus Jakarta Sans', Arial, sans-serif; background:#eef2f8; margin:0; padding:40px; display:flex; align-items:center; justify-content:center; min-height:100vh; }
-        .tarjeta { width:100%; max-width:760px; background:#fff; border-radius:18px; box-shadow:0 18px 50px rgba(11,31,58,.12); overflow:hidden; display:flex; }
-        .panel { width:280px; flex-shrink:0; background:linear-gradient(160deg,#0b1f3a 0%,#13315c 100%); padding:30px 24px; display:flex; flex-direction:column; justify-content:space-between; }
-        .marca { display:flex; align-items:center; gap:9px; }
-        .logo { width:30px; height:30px; border-radius:8px; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; }
-        .marca span { color:#fff; font-weight:700; font-size:15px; }
-        .panel img { display:block; width:100%; height:auto; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.35); }
-        .panel-img { margin:26px 0; }
-        .panel p { color:#9fb3d1; font-size:13px; line-height:1.55; margin:0; }
-        .form { flex:1; padding:38px 36px; }
-        .volver { display:inline-flex; align-items:center; gap:6px; color:#1e6fe8; text-decoration:none; font-size:13.5px; font-weight:600; margin-bottom:20px; }
-        .eyebrow { font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:#3b82f6; }
-        h1 { color:#0b1f3a; font-size:27px; font-weight:800; letter-spacing:-.02em; margin:8px 0 4px; }
-        .sub { color:#6b7789; font-size:14px; margin:0 0 26px; }
-        label { display:block; font-size:12.5px; font-weight:700; color:#0b1f3a; margin-bottom:7px; }
-        input, textarea { width:100%; padding:12px 14px; border:1.5px solid #e1e7f0; border-radius:10px; font-size:14px; margin-bottom:18px; font-family:inherit; color:#0b1f3a; outline:none; }
-        textarea { margin-bottom:26px; resize:vertical; }
-        input::placeholder, textarea::placeholder { color:#9aa6b8; }
-        input:focus, textarea:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.14); }
-        .btn { width:100%; display:flex; align-items:center; justify-content:center; gap:8px; background:#1e6fe8; color:#fff; border:none; padding:14px 20px; border-radius:10px; font-size:14.5px; font-weight:700; cursor:pointer; font-family:inherit; box-shadow:0 8px 18px rgba(30,111,232,.32); transition:background .15s; }
-        .btn:hover { background:#1862cf; }
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f7fb; margin:0; padding:32px; }
+        .contenedor { max-width:480px; margin:0 auto; background:#fff; border-radius:14px; padding:32px; box-shadow:0 4px 20px rgba(0,0,0,.06); }
+        h1 { color:#0b1f3a; margin-bottom:20px; }
+        label { display:block; font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:6px; }
+        input, textarea { width:100%; padding:10px 12px; border:1px solid #d8dee8; border-radius:8px; font-size:14px; margin-bottom:18px; font-family:inherit; box-sizing:border-box; }
+        .btn { background:#1e6fe8; color:#fff; border:none; padding:11px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .volver { display:inline-block; margin-bottom:16px; color:#1e6fe8; text-decoration:none; font-size:14px; }
         .error { background:#fdecec; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:18px; }
     </style>
 </head>
 <body>
-    <div class="tarjeta">
-        <div class="panel">
-            <div class="marca">
-                <div class="logo">V</div>
-                <span>VentaRápida</span>
-            </div>
-            <div class="panel-img">
-                <img th:src="@{/img/imagen_categoria.png}" alt="Categoría">
-            </div>
-            <p>Organiza tu inventario en categorías claras y fáciles de encontrar.</p>
-        </div>
+    <div class="contenedor">
+        <a class="volver" th:href="@{/categorias}">&larr; Volver a categorías</a>
+        <h1 th:text="${categoria.idCategoria} != null ? 'Editar categoría' : 'Nueva categoría'"></h1>
 
-        <div class="form">
-            <a class="volver" th:href="@{/categorias}">&larr; Volver a categorías</a>
-            <span class="eyebrow">Categorías</span>
-            <h1 th:text="${categoria.idCategoria} != null ? 'Editar categoría' : 'Nueva categoría'">Nueva categoría</h1>
-            <p class="sub">Completa los datos para registrarla.</p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
 
-            <p class="error" th:if="${error}" th:text="${error}"></p>
+        <form th:action="@{/categorias/guardar}" th:object="${categoria}" method="post">
+            <input type="hidden" th:field="*{idCategoria}">
 
-            <form th:action="@{/categorias/guardar}" th:object="${categoria}" method="post">
-                <input type="hidden" th:field="*{idCategoria}">
+            <label>Nombre</label>
+            <input type="text" th:field="*{nombre}" placeholder="Ej: Laptops" required>
 
-                <label>Nombre</label>
-                <input type="text" th:field="*{nombre}" placeholder="Ej: Laptops" required>
+            <label>Descripción</label>
+            <textarea th:field="*{descripcion}" rows="3" placeholder="Descripción breve de la categoría"></textarea>
 
-                <label>Descripción</label>
-                <textarea th:field="*{descripcion}" rows="3" placeholder="Descripción breve de la categoría"></textarea>
-
-                <button type="submit" class="btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                    Guardar categoría
-                </button>
-            </form>
-        </div>
+            <button type="submit" class="btn">Guardar</button>
+        </form>
     </div>
 </body>
 </html>
